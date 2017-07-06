@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# bin/compile <build-dir> <cache-dir> <env-dir>
+
+set -e
+set -o pipefail
+
+# Heroku-provided params
+BUILD_DIR="$1"
+CACHE_DIR="$2"
+ENV_DIR="$3"
+BUILDPACK_DIR=$(cd $(dirname $0)/..; pwd)
+
+function speak (){
+  echo "-----> $(date -u '+%Y-%m-%d_%H:%M:%S') $1"
+}
+
+speak "Starting..."
+
+speak "Build dir is: $BUILD_DIR"
+speak "Cache dir is: $CACHE_DIR"
+speak "Buildpack dir is: $BUILDPACK_DIR"
+
+speak "Current dir is: $(pwd)"
+
+speak "Available files are:"
+ls -ashl $BUILD_DIR
+
+BLACKLIST_REGEX="^(PATH|GIT_DIR|CPATH|CPPATH|LD_PRELOAD|LIBRARY_PATH)$"
+if [ -d "$ENV_DIR" ]; then
+  speak "Exporting config vars"
+  for e in $(ls "$ENV_DIR"); do
+    echo "$e" | grep -qvE "$BLACKLIST_REGEX" &&
+    export "$e=$(cat $ENV_DIR/$e)"
+    :
+  done
+fi
+
+if [ -z "$VINE" ]; then
+  speak "[ERROR] -  VINE environment variable must be defined!"
+  exit 2
+fi
+
+speak "Updating PATH to include this directory"
+export PATH=$BUILD_DIR:$PATH
+speak "PATH is now: $PATH"
+
+speak "Making Procfile available"
+cp "$BUILD_DIR/$VINE/Procfile" ./Procfile
+
+speak "Finished!"
