@@ -40,9 +40,9 @@ if [ -z "$VINE" ]; then
   exit 2
 fi
 
-speak "Updating PATH to include this directory"
-export PATH=$BUILD_DIR:$PATH
-speak "PATH is now: $PATH"
+speak "Copying .profile.d scripts"
+mkdir -p ${BUILD_DIR}/.profile.d
+cp -n ${BUILDPACK_DIR}/.profile.d/* ${BUILD_DIR}/.profile.d/
 
 speak "Making Procfile available"
 cp "$BUILD_DIR/$VINE/Procfile" ./Procfile
