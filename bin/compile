@@ -44,9 +44,6 @@ speak "Copying .profile.d scripts"
 mkdir -p ${BUILD_DIR}/.profile.d
 cp -n ${BUILDPACK_DIR}/.profile.d/* ${BUILD_DIR}/.profile.d/
 
-speak "Making Procfile available"
-cp "$BUILD_DIR/$VINE/Procfile" "$BUILD_DIR/Procfile"
-
 speak "Here is what the slug (located at $BUILD_DIR) now looks like:"
 ls -ashl $BUILD_DIR
 
